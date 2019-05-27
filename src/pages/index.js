@@ -1,21 +1,62 @@
 import React from "react"
+import Layout from "../components/Layout"
+import SimpleHero from "../components/SimpleHero"
+import Banner from "../components/Banner"
 import { Link } from "gatsby"
+import Services from "../components/Home/Services"
+import About from "../components/Home/About"
+import AniLink from "gatsby-plugin-transition-link/AniLink"
+import StyledHero from "../components/StyledHero"
+import { graphql } from "gatsby"
+import Featured from "../components/Home/Featured"
+import SEO from "../components/SEO"
+export default ({ data }) => {
+  const tours = data.tours.edges
+  return (
+    <Layout>
+      <SEO title="Home" />
+      <StyledHero home="true" img={data.defaultBcg.childImageSharp.fluid}>
+        <Banner
+          title="continue exploring"
+          info="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum sapiente id sit ut soluta quam."
+        >
+          <AniLink fade to="/tours" className="btn-white">
+            explore tours
+          </AniLink>
+        </Banner>
+      </StyledHero>
+      <About />
+      <Services />
+      <Featured tours={tours} />
+    </Layout>
+  )
+}
 
-import Layout from "../components/layout"
-import Image from "../components/image"
-import SEO from "../components/seo"
-
-const IndexPage = () => (
-  <Layout>
-    <SEO title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-      <Image />
-    </div>
-    <Link to="/page-2/">Go to page 2</Link>
-  </Layout>
-)
-
-export default IndexPage
+export const query = graphql`
+  {
+    defaultBcg: file(relativePath: { eq: "defaultBcg.jpeg" }) {
+      childImageSharp {
+        fluid(quality: 90, maxWidth: 4160) {
+          ...GatsbyImageSharpFluid_withWebp
+        }
+      }
+    }
+    tours: allContentfulTour(filter: { featured: { eq: true } }) {
+      edges {
+        node {
+          name
+          price
+          slug
+          country
+          contentful_id
+          days
+          images {
+            fluid {
+              ...GatsbyContentfulFluid
+            }
+          }
+        }
+      }
+    }
+  }
+`
